@@ -1,9 +1,16 @@
-import styles from "./ImageGallery.module.css";
 import ImageCard from "../ImageCard/ImageCard";
+import { Photo } from "../../photos";
+import css from "../ImageGallery/ImageGallery.module.css";
+import React from "react";
 
-const ImageGallery = ({ images, openModal }) => {
+interface ImageGalleryProps {
+  images: Photo[];
+  openModal: (image: Photo) => void;
+}
+
+const ImageGallery: React.FC<ImageGalleryProps> = ({ images, openModal }) => {
   return (
-    <ul className={styles.gallery}>
+    <ul className={css.imageGallery}>
       {images.map((image) => (
         <li key={image.id} onClick={() => openModal(image)}>
           <ImageCard image={image} />

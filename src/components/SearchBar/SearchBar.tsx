@@ -1,41 +1,52 @@
-import { useState } from "react";
-import styles from "./SearchBar.module.css";
-import toast from "react-hot-toast";
+import React, { useState, FormEvent, ChangeEvent } from "react";
+import toast, { Toaster } from "react-hot-toast";
+import { FaSearch } from "react-icons/fa";
 
-const SearchBar = ({ onSubmit }) => {
-  const [query, setQuery] = useState("");
+import css from "../SearchBar/SearchBar.module.css";
 
-  const handleChange = (e) => {
-    setQuery(e.target.value);
+const notify = () => toast.error("This field cannot be empty!");
+
+interface SearchBarProps {
+  onSubmit: (searchQuery: string) => void;
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({ onSubmit }) => {
+  const [searchQuery, setSearchQuery] = useState<string>("");
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (query.trim() === "") {
-      toast.error("Please enter a search term");
+    if (!searchQuery.trim()) {
+      notify();
       return;
     }
-    onSubmit(query);
-    setQuery("");
+
+    onSubmit(searchQuery);
+    setSearchQuery("");
   };
 
   return (
-    <header className={styles.header}>
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <div className="styles.inputWrapper">
+    <header className={css.header}>
+      <form onSubmit={handleSubmit} className={css.form}>
+        <div className={css.inputWrapper}>
           <input
+            name="inputSearch"
             type="text"
-            value={query}
-            onChange={handleChange}
-            className={styles.input}
             placeholder="Search images and photos"
-            autoFocus
+            value={searchQuery}
+            onChange={handleChange}
+            className={css.searchInput}
           />
-          <button type="submit" className={styles.button}>
+          <button type="submit" className={css.btn}>
+            <FaSearch className={css.searchIcon} />
             Search
           </button>
         </div>
       </form>
+      <Toaster position="top-center" reverseOrder={false} />
     </header>
   );
 };

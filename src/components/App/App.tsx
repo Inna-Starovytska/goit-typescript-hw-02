@@ -1,76 +1,91 @@
-import { useState, useEffect } from "react";
-import { fetchImages } from "../services/api";
+import React, { useEffect, useState } from "react";
+
+import { getPhotos, Photo } from "../../photos";
 import SearchBar from "../SearchBar/SearchBar";
 import ImageGallery from "../ImageGallery/ImageGallery";
+import ErrorMesage from "../ErrorMessage/ErrorMessage";
 import Loader from "../Loader/Loader";
-import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import LoadMoreBtn from "../LoadMoreBtn/LoadMoreBtn";
 import ImageModal from "../ImageModal/ImageModal";
-import styles from "../App/App.module.css";
 
-const App = () => {
-  const [images, setImages] = useState([]);
-  const [query, setQuery] = useState("");
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [totalPages, setTotalPages] = useState(999);
+import css from "../App/App.module.css";
+
+const App: React.FC = () => {
+  const [query, setQuery] = useState<string>("");
+  const [page, setPage] = useState<number>(1);
+  const [images, setImages] = useState<Photo[]>([]);
+  const [isLoading, setIsloading] = useState<boolean>(false);
+  const [error, setError] = useState<Error | null>(null);
+  const [isEmpty, setIsEmpty] = useState<boolean>(false);
+  const [totalPages, setTotalPages] = useState<number>(999);
+  const [modalIsOpen, setIsOpen] = useState<boolean>(false);
+  const [selectedImage, setSelectedImage] = useState<Photo | null>(null);
 
   useEffect(() => {
-    if (!query) return;
+    const fetchData = async () => {
+      if (!query) {
+        return;
+      }
+      setIsloading(true);
 
-    const getImages = async () => {
       try {
-        setLoading(true);
-        setError(false);
-        const data = await fetchImages(query, page);
-        setImages((prevImages) => [...prevImages, ...data.results]);
-        setTotalPages(data.total_pages);
+        const { total_pages, results } = await getPhotos(query, page);
+        if (!results.length) {
+          setIsEmpty(true);
+          return;
+        }
+        setImages((prevImages) => [...prevImages, ...results]);
+
+        setTotalPages(total_pages);
       } catch (error) {
-        setError("Failed to load images. Please try again later.");
+        if (error instanceof Error) {
+          setError(error);
+        }
       } finally {
-        setLoading(false);
+        setIsloading(false);
       }
     };
+    fetchData();
+  }, [page, query]);
 
-    getImages();
-  }, [query, page]);
-
-  const handleSearch = (searchQuery) => {
+  const onHandleSubmit = (searchQuery: string) => {
     setQuery(searchQuery);
     setPage(1);
     setImages([]);
+    setIsEmpty(false);
   };
 
   const handleLoadMore = () => {
     setPage((prevPage) => prevPage + 1);
   };
 
-  const openModal = (image) => {
+  const openModal = (image: Photo) => {
     setSelectedImage(image);
-    setShowModal(true);
+    setIsOpen(true);
   };
 
   const closeModal = () => {
-    setShowModal(false);
+    setIsOpen(false);
     setSelectedImage(null);
   };
 
   return (
-    <div className={styles.app}>
-      <SearchBar onSubmit={handleSearch} />
-      {error && <ErrorMessage message={error} />}
-      <ImageGallery images={images} openModal={openModal} />
-      {loading && <Loader />}
+    <div className={css.app}>
+      <SearchBar onSubmit={onHandleSubmit} />
+      {images.length > 0 && (
+        <ImageGallery images={images} openModal={openModal} />
+      )}
+
+      {error && <ErrorMesage message={error.message} />}
+      {isEmpty && <ErrorMesage message="Nothing found" />}
       {page >= totalPages && <p>END OF COLLECTION!!!!</p>}
-      {images.length > 0 && !loading && page < totalPages && (
+      {images.length > 0 && !isLoading && page < totalPages && (
         <LoadMoreBtn onClick={handleLoadMore} />
       )}
-      {showModal && selectedImage && (
+      {isLoading && <Loader />}
+      {modalIsOpen && selectedImage && (
         <ImageModal
-          isOpen={showModal}
+          isOpen={modalIsOpen}
           onRequestClose={closeModal}
           image={selectedImage}
         />

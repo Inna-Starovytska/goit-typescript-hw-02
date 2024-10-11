@@ -1,6 +1,6 @@
-.header {
-  background-color: blue;
-}
+/* .header {
+  background-color:;
+} */
 
 .form {
   display: flex;
@@ -12,36 +12,50 @@
   position: relative;
   display: inline-block;
 }
-.input {
+
+.searchIcon {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: #666;
+  font-size: 1.2em;
+  cursor: pointer;
+}
+
+.searchInput {
   padding: 8px 10px 8px 30px;
   font-size: 16px;
-  border: 1px #ccc;
+  border: 1px solid #ccc;
   border-radius: 4px;
   width: 250px;
   margin: 4px;
 }
-.input:focus {
-  background-color: lightgray;
+
+.searchInput:focus {
+  outline: none;
+  border-color: #007bff;
 }
 
-.button {
+.btn {
   border: none;
   border-radius: 8px;
   padding: 8px 16px;
   min-width: 100px;
   height: 40px;
+
+  background: gray;
+
   font-weight: 500;
   font-size: 16px;
   line-height: 1.5;
   letter-spacing: 0.04em;
-  color: gray;
+  color: #fff;
+
   cursor: pointer;
   margin-left: 10px;
-  background-color: white;
-  margin-top: 4px;
-  margin-bottom: 4px;
 }
 
-.button:hover {
-  background-color: #030468;
+.btn:hover {
+  background: #b6b6b7;
 }

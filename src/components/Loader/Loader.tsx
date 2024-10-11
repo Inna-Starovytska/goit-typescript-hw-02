@@ -1,10 +1,12 @@
-import { ThreeDots } from "react-loader-spinner";
-import styles from "./Loader.module.css";
+import { ThreeDots  } from "react-loader-spinner";
+import css from "../Loader/Loader.module.css";
 
-const Loader = () => (
-  <div className={styles.loader}>
-    <ThreeDots color="#00BFFF" height={80} width={80} />
-  </div>
-);
+const Loader: React.FC = () => {
+  return (
+    <div>
+       <ThreeDots color="gray" height={80} width={80} wrapperClass={css.loader} />
+    </div>
+  );
+};
 
 export default Loader;

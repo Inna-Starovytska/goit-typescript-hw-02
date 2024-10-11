@@ -1,32 +1,45 @@
 import Modal from "react-modal";
-import styles from "./ImageModal.module.css";
+import css from "../ImageModal/ImageModal.module.css";
+import { Photo } from "../../photos";
+import React from "react";
 
 Modal.setAppElement("#root");
 
-const ImageModal = ({ isOpen, onRequestClose, image }) => {
+interface ImageModalProps {
+  isOpen: boolean;
+  onRequestClose: () => void;
+  image: Photo | null;
+}
+
+const ImageModal: React.FC<ImageModalProps> = ({
+  isOpen,
+  onRequestClose,
+  image,
+}) => {
+  if (!image) {
+    return null;
+  }
+
   const { urls, alt_description, user, likes } = image;
 
   return (
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      className={styles.modal}
-      overlayClassName={styles.overlay}
+      className={css.modal}
+      overlayClassName={css.reactModalOverlay}
     >
-      <div className={styles.content}>
-        <img
-          src={urls.regular}
-          alt={alt_description}
-          className={styles.image}
-        />
-        <p>Author: {user.name}</p>
-        <p>Likes: {likes}</p>
-        <button onClick={onRequestClose} className={styles.closeButton}>
+      <div>
+        <p className={css.text}>Description: {alt_description}</p>
+        <img src={urls.regular} alt={alt_description} className={css.img} />
+        <p className={css.text}>Author: {user.name}</p>
+        <p className={css.text}>Likes: {likes}</p>
+
+        <button onClick={onRequestClose} className={css.btn}>
           Close
         </button>
       </div>
     </Modal>
   );
 };
-
 export default ImageModal;
